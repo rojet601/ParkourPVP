@@ -101,7 +101,7 @@ public class ParkourPVPExecutor implements CommandExecutor {
 				String line = room.getName() + "§3: " + room.getState().name() + ", " + room.getPlayerCount() + "/" + Room.MAX_PLAYERS;
 				if(room.getLobby() == null)
 					line = line + ", §cLOBBY MISSING§r";
-				if(room.getSpawn() == null)
+				if(room.getSpawnCount() == 0)
 					line = line + ", §cSPAWN MISSING§r";
 				if(room.getGoal() == null)
 					line = line + ", §cGOAL MISSING§r";

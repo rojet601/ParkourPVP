@@ -65,6 +65,10 @@ public class Room {
 		this.spawns.add(loc);
 	}
 	
+	public int getSpawnCount() {
+		return spawns.size();
+	}
+	
 	public Location getGoal() {
 		return goal;
 	}
@@ -144,7 +148,7 @@ public class Room {
 				public void run() {
 					state = RoomState.WAITING;
 					for(PlayerData player : players)
-						player.getPlayer().teleport(lobby);
+						player.getPlayer().teleport(ParkourPVP.getLobby());
 					
 					updateState();
 				}
