@@ -85,6 +85,9 @@ public class Room {
 	}
 	
 	public void playerScores(PlayerData player) {
-		
+		player.addPoint();
+		for(PlayerData data : players) {
+			data.getPlayer().teleport(spawn);
+		}
 	}
 }

@@ -2,6 +2,7 @@ package com.rojel.parkourpvp;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.rojel.parkourpvp.listeners.GoalListener;
 import com.rojel.parkourpvp.listeners.PlayerListener;
 import com.rojel.parkourpvp.listeners.SignListener;
 import com.rojel.parkourpvp.managers.PlayerManager;
@@ -18,6 +19,7 @@ public class ParkourPVP extends JavaPlugin {
 		
 		getServer().getPluginManager().registerEvents(new SignListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+		getServer().getPluginManager().registerEvents(new GoalListener(), this);
 	}
 	
 	public void onDisable() {
