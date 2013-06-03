@@ -19,4 +19,12 @@ public class RoomManager {
 	public static void removeRoom(Room room) {
 		rooms.remove(room.getName());
 	}
+	
+	public static void saveToFile() {
+		
+	}
+	
+	public static void loadFromFile() {
+		
+	}
 }

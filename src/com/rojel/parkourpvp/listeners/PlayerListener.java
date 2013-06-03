@@ -6,17 +6,23 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.rojel.parkourpvp.data.PlayerData;
+import com.rojel.parkourpvp.data.PlayerState;
 import com.rojel.parkourpvp.managers.PlayerManager;
 
 public class PlayerListener implements Listener {
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
-		PlayerData data = new PlayerData(event.getPlayer());
-		PlayerManager.registerPlayer(data);
+		PlayerManager.registerPlayer(event.getPlayer());
 	}
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent event) {
-		PlayerManager.unregisterPlayer(PlayerManager.getData(event.getPlayer()));
+		PlayerData data = PlayerManager.getData(event.getPlayer());
+		
+		if(data.getState() != PlayerState.NOT_IN_GAME) {
+			data.getRoom().leaveRoom(data);
+		}
+		
+		PlayerManager.unregisterPlayer(event.getPlayer());
 	}
 }

@@ -8,6 +8,7 @@ public class Room {
 	public static final int MAX_PLAYERS = 4;
 	
 	private String name;
+	private Location lobby;
 	private Location spawn;
 	private Location goal;
 	private ArrayList<PlayerData> players;
@@ -21,6 +22,14 @@ public class Room {
 	
 	public String getName() {
 		return name;
+	}
+	
+	public Location getLobby() {
+		return lobby;
+	}
+	
+	public void setLobby(Location loc) {
+		this.lobby = loc;
 	}
 	
 	public Location getSpawn() {
@@ -52,14 +61,15 @@ public class Room {
 	}
 	
 	public void joinRoom(PlayerData player) {
-		if(!isInRoom(player) && getPlayerCount() < MAX_PLAYERS)
-			players.add(player);
+		players.add(player);
+		player.joinRoom(this);
 		
 		updateState();
 	}
 	
 	public void leaveRoom(PlayerData player) {
 		players.remove(player);
+		player.leaveRoom();
 		
 		updateState();
 	}
