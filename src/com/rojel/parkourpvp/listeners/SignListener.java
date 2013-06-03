@@ -19,12 +19,14 @@ public class SignListener implements Listener {
 				if(room != null) {
 					if(room.getState() == RoomState.WAITING) {
 						event.setLine(0, "§aJoin room");
-						event.setLine(3, room.getWaitingCounter() + "s until start");
+						event.setLine(3, secondsToString(room.getWaitingCounter()) + " until start");
 					}
 					else if(room.getState() == RoomState.ENDING)
 						event.setLine(0, "§eEnding");
-					else if(room.getState() == RoomState.RUNNING)
+					else if(room.getState() == RoomState.RUNNING) {
 						event.setLine(0, "§cRunning");
+						event.setLine(3, secondsToString(room.getGameCounter()) + " left");
+					}
 					
 					event.setLine(1, room.getName());
 					event.setLine(2, "§o" + room.getPlayerCount() + "/" + Room.MAX_PLAYERS + " players");
@@ -48,12 +50,14 @@ public class SignListener implements Listener {
 				if(room != null) {
 					if(room.getState() == RoomState.WAITING) {
 						event.setLine(0, "§aWaiting");
-						event.setLine(3, room.getWaitingCounter() + "s until start");
+						event.setLine(3, secondsToString(room.getWaitingCounter()) + " until start");
 					}
 					else if(room.getState() == RoomState.ENDING)
 						event.setLine(0, "§eEnding");
-					else if(room.getState() == RoomState.RUNNING)
+					else if(room.getState() == RoomState.RUNNING) {
 						event.setLine(0, "§cRunning");
+						event.setLine(3, secondsToString(room.getGameCounter()) + " left");
+					}
 					
 					event.setLine(1, room.getName());
 					event.setLine(2, "§o" + room.getPlayerCount() + "/" + Room.MAX_PLAYERS + " players");
@@ -86,5 +90,12 @@ public class SignListener implements Listener {
 					event.getPlayer().sendMessage("§cThe room you want to leave does not exist.");
 			}
 		}
+	}
+	
+	public String secondsToString(int seconds) {
+		int minutes = (int) (seconds / 60);
+		int secondsLeft = seconds - minutes * 60;
+		
+		return minutes + "min " + secondsLeft + "s";
 	}
 }
