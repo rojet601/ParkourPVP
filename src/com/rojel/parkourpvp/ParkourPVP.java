@@ -3,6 +3,7 @@ package com.rojel.parkourpvp;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.rojel.parkourpvp.commands.ParkourPVPExecutor;
 import com.rojel.parkourpvp.listeners.GoalListener;
 import com.rojel.parkourpvp.listeners.PlayerListener;
 import com.rojel.parkourpvp.listeners.SignListener;
@@ -23,6 +24,8 @@ public class ParkourPVP extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new SignListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		getServer().getPluginManager().registerEvents(new GoalListener(), this);
+		
+		getCommand("ppvp").setExecutor(new ParkourPVPExecutor());
 	}
 	
 	public void onDisable() {
