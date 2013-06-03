@@ -9,6 +9,7 @@ import com.rojel.parkourpvp.listeners.PlayerListener;
 import com.rojel.parkourpvp.listeners.SignListener;
 import com.rojel.parkourpvp.managers.PlayerManager;
 import com.rojel.parkourpvp.managers.RoomManager;
+import com.rojel.pluginsignapi.PluginSignAPI;
 
 public class ParkourPVP extends JavaPlugin {
 	private static ParkourPVP plugin;
@@ -26,6 +27,8 @@ public class ParkourPVP extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new GoalListener(), this);
 		
 		getCommand("ppvp").setExecutor(new ParkourPVPExecutor());
+		
+		PluginSignAPI.updateSigns();
 	}
 	
 	public void onDisable() {
