@@ -4,6 +4,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.ChatColor
 
 import com.rojel.parkourpvp.ParkourPVP;
 import com.rojel.parkourpvp.data.Room;
@@ -14,15 +15,15 @@ public class ParkourPVPExecutor implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(args.length == 0) {
-			sender.sendMessage("§3/ppvp room [room] create §rCreates a new room with the name [room]");
-			sender.sendMessage("§3/ppvp room [room] lobby §rSets the lobby of [room] to your current position");
-			sender.sendMessage("§3/ppvp room [room] spawn §rSets the spawn of [room] to your current position");
-			sender.sendMessage("§3/ppvp room [room] goal §rSets the goal of [room] to your current position");
-			sender.sendMessage("§3/ppvp room [room] delete §rDeletes the room with the name [room]");
+			sender.sendMessage(ChatColor.DARK_AQUA + "/ppvp room [room] create" + ChatColor.RESET + "Creates a new room with the name [room]");
+			sender.sendMessage("ï¿½3/ppvp room [room] lobby ï¿½rSets the lobby of [room] to your current position");
+			sender.sendMessage("ï¿½3/ppvp room [room] spawn ï¿½rSets the spawn of [room] to your current position");
+			sender.sendMessage("ï¿½3/ppvp room [room] goal ï¿½rSets the goal of [room] to your current position");
+			sender.sendMessage("ï¿½3/ppvp room [room] delete ï¿½rDeletes the room with the name [room]");
 			
-			sender.sendMessage("§3/ppvp rooms §rLists all rooms");
+			sender.sendMessage("ï¿½3/ppvp rooms ï¿½rLists all rooms");
 			
-			sender.sendMessage("§3/ppvp lobby §rSets the room selection lobby to your current position");
+			sender.sendMessage("ï¿½3/ppvp lobby ï¿½rSets the room selection lobby to your current position");
 			return true;
 		} else if(args[0].equalsIgnoreCase("room") && args.length == 3) {
 			String name = args[1];
@@ -30,7 +31,7 @@ public class ParkourPVPExecutor implements CommandExecutor {
 			
 			if(task.equalsIgnoreCase("create")) {
 				RoomManager.createRoom(name);
-				sender.sendMessage("§3Room §r" + name + " §3created.");
+				sender.sendMessage("ï¿½3Room ï¿½r" + name + " ï¿½3created.");
 				
 				PluginSignAPI.updateSigns();
 				return true;
@@ -40,9 +41,9 @@ public class ParkourPVPExecutor implements CommandExecutor {
 					
 					if(room != null) {
 						room.setLobby(((Player) sender).getLocation());
-						sender.sendMessage("§3Lobby for §r" + name + " §3set.");
+						sender.sendMessage("ï¿½3Lobby for ï¿½r" + name + " ï¿½3set.");
 					} else {
-						sender.sendMessage("§3Room §r" + name + " §3does not exist.");
+						sender.sendMessage("ï¿½3Room ï¿½r" + name + " ï¿½3does not exist.");
 					}
 				} else {
 					sender.sendMessage("You have to run this command in-game.");
@@ -55,9 +56,9 @@ public class ParkourPVPExecutor implements CommandExecutor {
 					
 					if(room != null) {
 						room.setSpawn(((Player) sender).getLocation());
-						sender.sendMessage("§3Spawn for §r" + name + " §3set.");
+						sender.sendMessage("ï¿½3Spawn for ï¿½r" + name + " ï¿½3set.");
 					} else {
-						sender.sendMessage("§3Room §r" + name + " §3does not exist.");
+						sender.sendMessage("ï¿½3Room ï¿½r" + name + " ï¿½3does not exist.");
 					}
 				} else {
 					sender.sendMessage("You have to run this command in-game.");
@@ -70,9 +71,9 @@ public class ParkourPVPExecutor implements CommandExecutor {
 					
 					if(room != null) {
 						room.setGoal(((Player) sender).getLocation());
-						sender.sendMessage("§3Goal for §r" + name + " §3set.");
+						sender.sendMessage("ï¿½3Goal for ï¿½r" + name + " ï¿½3set.");
 					} else {
-						sender.sendMessage("§3Room §r" + name + " §3does not exist.");
+						sender.sendMessage("ï¿½3Room ï¿½r" + name + " ï¿½3does not exist.");
 					}
 				} else {
 					sender.sendMessage("You have to run this command in-game.");
@@ -84,27 +85,27 @@ public class ParkourPVPExecutor implements CommandExecutor {
 				
 				if(room != null) {
 					RoomManager.removeRoom(room);
-					sender.sendMessage("§3Room §r" + name + " §3deleted.");
+					sender.sendMessage("ï¿½3Room ï¿½r" + name + " ï¿½3deleted.");
 					return true;
 				} else {
-					sender.sendMessage("§3Room §r" + name + " §3does not exist.");
+					sender.sendMessage("ï¿½3Room ï¿½r" + name + " ï¿½3does not exist.");
 				}
 				
 				return true;
 			}
 		} else if(args[0].equalsIgnoreCase("rooms") && args.length == 1) {
 			if(RoomManager.getRooms().size() == 0)
-				sender.sendMessage("§3No rooms saved.");
+				sender.sendMessage("ï¿½3No rooms saved.");
 			else
-				sender.sendMessage("============§3ROOMS§r============");
+				sender.sendMessage("============ï¿½3ROOMSï¿½r============");
 			for(Room room : RoomManager.getRooms()) {
-				String line = room.getName() + "§3: " + room.getState().name() + ", " + room.getPlayerCount() + "/" + Room.MAX_PLAYERS;
+				String line = room.getName() + "ï¿½3: " + room.getState().name() + ", " + room.getPlayerCount() + "/" + Room.MAX_PLAYERS;
 				if(room.getLobby() == null)
-					line = line + ", §cLOBBY MISSING§r";
+					line = line + ", ï¿½cLOBBY MISSINGï¿½r";
 				if(room.getSpawn() == null)
-					line = line + ", §cSPAWN MISSING§r";
+					line = line + ", ï¿½cSPAWN MISSINGï¿½r";
 				if(room.getGoal() == null)
-					line = line + ", §cGOAL MISSING§r";
+					line = line + ", ï¿½cGOAL MISSINGï¿½r";
 				
 				sender.sendMessage(line);
 			}
@@ -113,7 +114,7 @@ public class ParkourPVPExecutor implements CommandExecutor {
 		} else if(args[0].equalsIgnoreCase("lobby") && args.length == 1) {
 			if(sender instanceof Player) {
 				ParkourPVP.setLobby(((Player) sender).getLocation());
-				sender.sendMessage("§3Lobby position set.");
+				sender.sendMessage("ï¿½3Lobby position set.");
 			} else {
 				sender.sendMessage("You have to run this command in-game.");
 			}
