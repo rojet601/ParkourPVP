@@ -19,7 +19,7 @@ public class DamageListener implements Listener {
 			if(player.getState() == PlayerState.IN_GAME) {
 				event.setDamage(0);
 				
-				if(player.getRoom().getState() != RoomState.RUNNING)
+				if(player.getRoom().getState() != RoomState.RUNNING || player.isProtected())
 					event.setCancelled(true);
 			}
 		}

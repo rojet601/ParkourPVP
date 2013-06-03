@@ -1,6 +1,7 @@
 package com.rojel.parkourpvp.data;
 
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.rojel.parkourpvp.ParkourPVP;
 
@@ -9,11 +10,25 @@ public class PlayerData {
 	private PlayerState state;
 	private int points;
 	private Room room;
+	private boolean isProtected;
+	private int protectionCounter;
 	
 	public PlayerData(Player player) {
 		this.player = player;
 		this.state = PlayerState.NOT_IN_GAME;
 		this.points = 0;
+		this.isProtected = false;
+		
+		ParkourPVP.getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(ParkourPVP.getPlugin(), new BukkitRunnable() {
+			@Override
+			public void run() {
+				if(isProtected) {
+					protectionCounter--;
+					if(protectionCounter <= 0)
+						isProtected = false;
+				}
+			}
+		}, 0, 20);
 	}
 	
 	public Player getPlayer() {
@@ -42,6 +57,15 @@ public class PlayerData {
 	
 	public Room getRoom() {
 		return room;
+	}
+	
+	public boolean isProtected() {
+		return isProtected;
+	}
+	
+	public void setProtected() {
+		this.isProtected = true;
+		this.protectionCounter = 5;
 	}
 	
 	public void joinRoom(Room room) {

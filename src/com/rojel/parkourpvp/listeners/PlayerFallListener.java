@@ -17,7 +17,8 @@ public class PlayerFallListener implements Listener {
 		
 		if(player.getState() == PlayerState.IN_GAME && player.getPlayer().getLocation().getY() < ParkourPVP.VOID_LEVEL && player.getRoom().getState() == RoomState.RUNNING) {
 			player.getPlayer().teleport(player.getRoom().getSpawn());
-			player.getPlayer().sendMessage("§3You fell out of the world. Try to not do that too often.");
+			player.getPlayer().sendMessage("§3You fell out of the world. Try to not do that too often. You have 5 seconds protection.");
+			player.setProtected();
 		}
 	}
 }
