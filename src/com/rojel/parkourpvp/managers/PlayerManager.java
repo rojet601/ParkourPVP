@@ -14,19 +14,18 @@ public class PlayerManager {
 		return players.get(player.getName());
 	}
 	
-	public static void registerPlayer(PlayerData player) {
-		players.put(player.getPlayer().getName(), player);
+	public static void registerPlayer(Player player) {
+		players.put(player.getName(), new PlayerData(player));
 	}
 	
-	public static void unregisterPlayer(PlayerData player) {
-		players.remove(player.getPlayer().getName());
+	public static void unregisterPlayer(Player player) {
+		players.remove(player.getName());
 	}
 	
 	public static void reset() {
 		players.clear();
 		for(Player player : ParkourPVP.getPlugin().getServer().getOnlinePlayers()) {
-			PlayerData data = new PlayerData(player);
-			PlayerManager.registerPlayer(data);
+			PlayerManager.registerPlayer(player);
 		}
 	}
 }
