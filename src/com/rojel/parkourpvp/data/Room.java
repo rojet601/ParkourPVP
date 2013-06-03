@@ -65,7 +65,7 @@ public class Room {
 	}
 	
 	public void joinRoom(PlayerData player) {
-		sendMessage(player.getPlayer().getDisplayName() + " §3has joined the room.");
+		sendMessage(player.getPlayer().getDisplayName() + " §3joined the room.");
 		
 		players.add(player);
 		player.joinRoom(this);
@@ -77,7 +77,7 @@ public class Room {
 		players.remove(player);
 		player.leaveRoom();
 		
-		sendMessage(player.getPlayer().getDisplayName() + " §3has left the room.");
+		sendMessage(player.getPlayer().getDisplayName() + " §3left the room.");
 		
 		updateState();
 	}
@@ -93,6 +93,8 @@ public class Room {
 			for(PlayerData player : players) {
 				player.getPlayer().teleport(spawn);
 			}
+			
+			sendMessage("§3The game has started. Try to reach the goal, but don't let the other knock you off.");
 		} else if((state == RoomState.RUNNING && getWinner() != null) || (state == RoomState.RUNNING && getPlayerCount() <= 1)) {
 			PlayerData winner;
 			
@@ -101,7 +103,7 @@ public class Room {
 			else
 				winner = players.get(0);
 			
-			sendMessage(winner.getPlayer().getDisplayName() + " §3 has won the game.");
+			sendMessage(winner.getPlayer().getDisplayName() + " §3won the game.");
 			
 			state = RoomState.ENDING;
 			
@@ -115,6 +117,8 @@ public class Room {
 					state = RoomState.WAITING;
 					for(PlayerData player : players)
 						player.getPlayer().teleport(lobby);
+					
+					updateState();
 				}
 			}, 100);
 		}
@@ -124,6 +128,7 @@ public class Room {
 	
 	public void playerScores(PlayerData player) {
 		player.addPoint();
+		sendMessage(player.getPlayer().getDisplayName() + " §3scored a point.");
 		
 		for(PlayerData data : players) {
 			data.getPlayer().teleport(spawn);
