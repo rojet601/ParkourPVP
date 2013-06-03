@@ -3,6 +3,9 @@ package com.rojel.parkourpvp.data;
 import java.util.ArrayList;
 
 import org.bukkit.Location;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import com.rojel.parkourpvp.ParkourPVP;
 
 public class Room {
 	public static final int MAX_PLAYERS = 4;
@@ -81,13 +84,58 @@ public class Room {
 	private void updateState() {
 		if(state == RoomState.WAITING && getPlayerCount() == MAX_PLAYERS) {
 			state = RoomState.RUNNING;
+			
+			for(PlayerData player : players) {
+				player.getPlayer().teleport(spawn);
+			}
+		} else if((state == RoomState.RUNNING && getWinner() != null) || (state == RoomState.RUNNING && getPlayerCount() <= 1)) {
+			PlayerData winner;
+			
+			if(getWinner() != null)
+				winner = getWinner();
+			else
+				winner = players.get(0);
+			
+			sendMessage(winner.getPlayer().getDisplayName() + " §3 has won the game.");
+			
+			state = RoomState.ENDING;
+			
+			for(PlayerData player : players) {
+				player.resetPoints();
+			}
+			
+			ParkourPVP.getPlugin().getServer().getScheduler().runTaskLater(ParkourPVP.getPlugin(), new BukkitRunnable() {
+				@Override
+				public void run() {
+					state = RoomState.WAITING;
+					for(PlayerData player : players)
+						player.getPlayer().teleport(lobby);
+				}
+			}, 100);
 		}
 	}
 	
 	public void playerScores(PlayerData player) {
 		player.addPoint();
+		
 		for(PlayerData data : players) {
 			data.getPlayer().teleport(spawn);
 		}
+		
+		updateState();
+	}
+	
+	public PlayerData getWinner() {
+		for(PlayerData player : players) {
+			if(player.getPoints() >= 3)
+				return player;
+		}
+		
+		return null;
+	}
+	
+	public void sendMessage(String msg) {
+		for(PlayerData player : players)
+			player.getPlayer().sendMessage(msg);
 	}
 }
