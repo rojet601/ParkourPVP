@@ -10,6 +10,7 @@ import com.rojel.pluginsignapi.PluginSignAPI;
 
 public class Room {
 	public static final int MAX_PLAYERS = 4;
+	public static final int MIN_PLAYERS = 2;
 	
 	private String name;
 	private Location lobby;
@@ -17,11 +18,24 @@ public class Room {
 	private Location goal;
 	private ArrayList<PlayerData> players;
 	private RoomState state;
+	private int waitingCounter;
 	
 	public Room(String name) {
 		this.name = name;
 		this.players = new ArrayList<PlayerData>();
 		this.state = RoomState.WAITING;
+		this.waitingCounter = 20;
+		
+		ParkourPVP.getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(ParkourPVP.getPlugin(), new BukkitRunnable() {
+			@Override
+			public void run() {
+				if(state == RoomState.WAITING && getPlayerCount() >= MIN_PLAYERS) {
+					waitingCounter--;
+					
+					updateState();
+				}
+			}
+		}, 0, 20);
 	}
 	
 	public String getName() {
@@ -56,6 +70,10 @@ public class Room {
 		return players.size();
 	}
 	
+	public int getWaitingCounter() {
+		return waitingCounter;
+	}
+	
 	public boolean isInRoom(PlayerData player) {
 		for(PlayerData data : players)
 			if(data == player)
@@ -87,14 +105,17 @@ public class Room {
 	}
 	
 	private void updateState() {
-		if(state == RoomState.WAITING && getPlayerCount() == MAX_PLAYERS) {
+		if(state == RoomState.WAITING && getPlayerCount() < MIN_PLAYERS) {
+			waitingCounter = 20;
+		} else if(state == RoomState.WAITING && waitingCounter <= 0) {
 			state = RoomState.RUNNING;
+			waitingCounter = 20;
 			
 			for(PlayerData player : players) {
 				player.getPlayer().teleport(spawn);
 			}
 			
-			sendMessage("§3The game has started. Try to reach the goal, but don't let the other knock you off.");
+			sendMessage("§3The game has started. Try to reach the goal, but don't let the others knock you off.");
 		} else if((state == RoomState.RUNNING && getWinner() != null) || (state == RoomState.RUNNING && getPlayerCount() <= 1)) {
 			PlayerData winner;
 			

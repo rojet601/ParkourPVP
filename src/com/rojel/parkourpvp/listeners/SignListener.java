@@ -17,8 +17,10 @@ public class SignListener implements Listener {
 			if(event.getPurpose().equalsIgnoreCase("join")) {
 				Room room = RoomManager.getRoom(event.getData());
 				if(room != null) {
-					if(room.getState() == RoomState.WAITING)
+					if(room.getState() == RoomState.WAITING) {
 						event.setLine(0, "§aJoin room");
+						event.setLine(3, room.getWaitingCounter() + "s until start");
+					}
 					else if(room.getState() == RoomState.ENDING)
 						event.setLine(0, "§eEnding");
 					else if(room.getState() == RoomState.RUNNING)
