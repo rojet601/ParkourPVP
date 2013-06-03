@@ -96,6 +96,9 @@ public class SignListener implements Listener {
 		int minutes = (int) (seconds / 60);
 		int secondsLeft = seconds - minutes * 60;
 		
-		return minutes + "min " + secondsLeft + "s";
+		if(minutes == 0)
+			return secondsLeft + "s";
+		else
+			return minutes + "min " + secondsLeft + "s";
 	}
 }
