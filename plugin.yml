@@ -2,8 +2,9 @@ name: ParkourPVP
 main: com.rojel.parkourpvp.ParkourPVP
 version: 0.1
 authors: [Rojet601, Gorro_Rojo]
-depend: PluginSignAPI
+depend: [PluginSignAPI]
 commands:
   ppvp:
     description: Commands for setting up ParkourPVP arenas.
-    permission: parkourpvp
+    permission: parkourpvp.*
+    usage: /ppvp to show help
