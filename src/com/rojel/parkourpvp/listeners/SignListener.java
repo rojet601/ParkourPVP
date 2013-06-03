@@ -43,6 +43,25 @@ public class SignListener implements Listener {
 					event.setLine(1, "§cDOES NOT");
 					event.setLine(2, "§cEXIST");
 				}
+			} else if(event.getPurpose().equalsIgnoreCase("info")) {
+				Room room = RoomManager.getRoom(event.getData());
+				if(room != null) {
+					if(room.getState() == RoomState.WAITING) {
+						event.setLine(0, "§aWaiting");
+						event.setLine(3, room.getWaitingCounter() + "s until start");
+					}
+					else if(room.getState() == RoomState.ENDING)
+						event.setLine(0, "§eEnding");
+					else if(room.getState() == RoomState.RUNNING)
+						event.setLine(0, "§cRunning");
+					
+					event.setLine(1, room.getName());
+					event.setLine(2, "§o" + room.getPlayerCount() + "/" + Room.MAX_PLAYERS + " players");
+				} else {
+					event.setLine(0, event.getData());
+					event.setLine(1, "§cDOES NOT");
+					event.setLine(2, "§cEXIST");
+				}
 			}
 		}
 	}
