@@ -5,6 +5,7 @@ import org.bukkit.event.Listener;
 
 import com.rojel.parkourpvp.data.Room;
 import com.rojel.parkourpvp.data.RoomState;
+import com.rojel.parkourpvp.managers.PlayerManager;
 import com.rojel.parkourpvp.managers.RoomManager;
 import com.rojel.pluginsignapi.events.PluginSignClickEvent;
 import com.rojel.pluginsignapi.events.PluginSignUpdateEvent;
@@ -47,7 +48,21 @@ public class SignListener implements Listener {
 	@EventHandler
 	public void onSignClick(PluginSignClickEvent event) {
 		if(event.getPlugin().equalsIgnoreCase("ppvp")) {
-			
+			if(event.getPurpose().equalsIgnoreCase("join")) {
+				Room room = RoomManager.getRoom(event.getData());
+				if(room != null) {
+					if(room.isJoinable())
+						room.joinRoom(PlayerManager.getData(event.getPlayer()));
+					else
+						event.getPlayer().sendMessage("§cThis room is either full, running or not setup.");
+				}
+			} else if(event.getPurpose().equalsIgnoreCase("leave")) {
+				Room room = RoomManager.getRoom(event.getData());
+				if(room != null)
+					room.leaveRoom(PlayerManager.getData(event.getPlayer()));
+				else
+					event.getPlayer().sendMessage("§cThe room you want to leave does not exist.");
+			}
 		}
 	}
 }
