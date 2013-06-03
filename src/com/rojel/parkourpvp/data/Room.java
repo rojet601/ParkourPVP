@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.rojel.parkourpvp.ParkourPVP;
+import com.rojel.pluginsignapi.PluginSignAPI;
 
 public class Room {
 	public static final int MAX_PLAYERS = 4;
@@ -117,6 +118,8 @@ public class Room {
 				}
 			}, 100);
 		}
+		
+		PluginSignAPI.updateSigns();
 	}
 	
 	public void playerScores(PlayerData player) {
