@@ -3,6 +3,7 @@ package com.rojel.parkourpvp.listeners;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.ChatColor
 
 import com.rojel.parkourpvp.data.PlayerData;
 import com.rojel.parkourpvp.data.PlayerState;
@@ -15,7 +16,7 @@ public class PlayerFallListener implements Listener {
 		
 		if(player.getState() == PlayerState.IN_GAME && player.getPlayer().getLocation().getY() < 0) {
 			player.getPlayer().teleport(player.getRoom().getSpawn());
-			player.getPlayer().sendMessage("§3You fell out of the world. Try to not do that too often.");
+			player.getPlayer().sendMessage(ChatColor.DARK_AQUA + "You fell off the world. Try not to do that too often.");
 		}
 	}
 }
