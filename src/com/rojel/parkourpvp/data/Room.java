@@ -64,15 +64,19 @@ public class Room {
 	}
 	
 	public void joinRoom(PlayerData player) {
+		sendMessage(player.getPlayer().getDisplayName() + " §3has joined the room.");
+		
 		players.add(player);
 		player.joinRoom(this);
 		
 		updateState();
 	}
 	
-	public void leaveRoom(PlayerData player) {
+	public void leaveRoom(PlayerData player) {		
 		players.remove(player);
 		player.leaveRoom();
+		
+		sendMessage(player.getPlayer().getDisplayName() + " §3has left the room.");
 		
 		updateState();
 	}
@@ -137,5 +141,20 @@ public class Room {
 	public void sendMessage(String msg) {
 		for(PlayerData player : players)
 			player.getPlayer().sendMessage(msg);
+	}
+	
+	public boolean isJoinable() {
+		if(lobby == null)
+			return false;
+		if(spawn == null)
+			return false;
+		if(goal == null)
+			return false;
+		if(getPlayerCount() == MAX_PLAYERS)
+			return false;
+		if(state != RoomState.WAITING)
+			return false;
+		
+		return true;
 	}
 }
