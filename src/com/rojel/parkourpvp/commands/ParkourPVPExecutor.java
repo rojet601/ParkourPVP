@@ -54,8 +54,8 @@ public class ParkourPVPExecutor implements CommandExecutor {
 					Room room = RoomManager.getRoom(name);
 					
 					if(room != null) {
-						room.setSpawn(((Player) sender).getLocation());
-						sender.sendMessage("§3Spawn for §r" + name + " §3set.");
+						room.addSpawn(((Player) sender).getLocation());
+						sender.sendMessage("§3Spawn for §r" + name + " §3added.");
 					} else {
 						sender.sendMessage("§3Room §r" + name + " §3does not exist.");
 					}

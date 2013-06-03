@@ -14,15 +14,17 @@ public class Room {
 	
 	private String name;
 	private Location lobby;
-	private Location spawn;
+	private ArrayList<Location> spawns;
 	private Location goal;
 	private ArrayList<PlayerData> players;
 	private RoomState state;
 	private int waitingCounter;
+	private int spawnIndex;
 	
 	public Room(String name) {
 		this.name = name;
 		this.players = new ArrayList<PlayerData>();
+		this.spawns = new ArrayList<Location>();
 		this.state = RoomState.WAITING;
 		this.waitingCounter = 20;
 		
@@ -51,11 +53,16 @@ public class Room {
 	}
 	
 	public Location getSpawn() {
+		Location spawn = spawns.get(spawnIndex);
+		spawnIndex++;
+		if(spawnIndex >= spawns.size())
+			spawnIndex = 0;
+		
 		return spawn;
 	}
 	
-	public void setSpawn(Location loc) {
-		this.spawn = loc;
+	public void addSpawn(Location loc) {
+		this.spawns.add(loc);
 	}
 	
 	public Location getGoal() {
@@ -112,7 +119,7 @@ public class Room {
 			waitingCounter = 20;
 			
 			for(PlayerData player : players) {
-				player.getPlayer().teleport(spawn);
+				player.getPlayer().teleport(getSpawn());
 			}
 			
 			sendMessage("§3The game has started. Try to reach the goal, but don't let the others knock you off.");
@@ -152,7 +159,7 @@ public class Room {
 		sendMessage(player.getPlayer().getDisplayName() + " §3scored a point.");
 		
 		for(PlayerData data : players) {
-			data.getPlayer().teleport(spawn);
+			data.getPlayer().teleport(getSpawn());
 		}
 		
 		updateState();
@@ -160,7 +167,7 @@ public class Room {
 	
 	public PlayerData getWinner() {
 		for(PlayerData player : players) {
-			if(player.getPoints() >= 3)
+			if(player.getPoints() >= 2)
 				return player;
 		}
 		
@@ -175,7 +182,7 @@ public class Room {
 	public boolean isJoinable() {
 		if(lobby == null)
 			return false;
-		if(spawn == null)
+		if(spawns.size() == 0)
 			return false;
 		if(goal == null)
 			return false;
