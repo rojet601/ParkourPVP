@@ -19,6 +19,7 @@ public class Room {
 	private ArrayList<PlayerData> players;
 	private RoomState state;
 	private int waitingCounter;
+	private int gameCounter;
 	private int spawnIndex;
 	
 	public Room(String name) {
@@ -27,12 +28,19 @@ public class Room {
 		this.spawns = new ArrayList<Location>();
 		this.state = RoomState.WAITING;
 		this.waitingCounter = 20;
+		this.gameCounter = 300;
 		
 		ParkourPVP.getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(ParkourPVP.getPlugin(), new BukkitRunnable() {
 			@Override
 			public void run() {
 				if(state == RoomState.WAITING && getPlayerCount() >= MIN_PLAYERS) {
 					waitingCounter--;
+					
+					updateState();
+				} else if(state == RoomState.RUNNING) {
+					gameCounter--;
+					if(gameCounter % 60 == 0)
+						sendMessage((gameCounter / 60) + " §3min left.");
 					
 					updateState();
 				}
@@ -85,6 +93,10 @@ public class Room {
 		return waitingCounter;
 	}
 	
+	public int getGameCounter() {
+		return gameCounter;
+	}
+	
 	public boolean isInRoom(PlayerData player) {
 		for(PlayerData data : players)
 			if(data == player)
@@ -127,7 +139,7 @@ public class Room {
 			}
 			
 			sendMessage("§3The game has started. Try to reach the goal, but don't let the others knock you off.");
-		} else if((state == RoomState.RUNNING && getWinner() != null) || (state == RoomState.RUNNING && getPlayerCount() <= 1)) {
+		} else if(state == RoomState.RUNNING && (getWinner() != null || getPlayerCount() <= 1)) {
 			PlayerData winner;
 			
 			if(getWinner() != null)
@@ -139,20 +151,25 @@ public class Room {
 			
 			state = RoomState.ENDING;
 			
-			for(PlayerData player : players) {
-				player.resetPoints();
-			}
-			
 			ParkourPVP.getPlugin().getServer().getScheduler().runTaskLater(ParkourPVP.getPlugin(), new BukkitRunnable() {
 				@Override
 				public void run() {
 					state = RoomState.WAITING;
 					for(PlayerData player : players)
-						player.getPlayer().teleport(ParkourPVP.getLobby());
+						leaveRoom(player);
 					
 					updateState();
 				}
 			}, 100);
+		} else if(state == RoomState.RUNNING && getGameCounter() <= 0) {
+			gameCounter = 300;
+			state = RoomState.WAITING;
+			
+			sendMessage("§3Time has run out and no one won. Teleporting everyone back to the lobby.");
+			
+			for(PlayerData player : players) {
+				leaveRoom(player);
+			}
 		}
 		
 		PluginSignAPI.updateSigns();
