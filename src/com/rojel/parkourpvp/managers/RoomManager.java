@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.rojel.parkourpvp.data.Room;
+import com.rojel.pluginsignapi.PluginSignAPI;
 
 
 public class RoomManager {
@@ -22,14 +23,20 @@ public class RoomManager {
 	
 	public static void addRoom(Room room) {
 		rooms.put(room.getName(), room);
+		
+		PluginSignAPI.updateSigns();
 	}
 	
 	public static void removeRoom(Room room) {
 		rooms.remove(room.getName());
+		
+		PluginSignAPI.updateSigns();
 	}
 	
 	public static void removeRoom(String name) {
 		rooms.remove(name);
+		
+		PluginSignAPI.updateSigns();
 	}
 	
 	public static List<Room> getRooms() {

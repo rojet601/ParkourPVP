@@ -55,7 +55,8 @@ public class SignListener implements Listener {
 						room.joinRoom(PlayerManager.getData(event.getPlayer()));
 					else
 						event.getPlayer().sendMessage("§cThis room is either full, running or not setup.");
-				}
+				} else
+					event.getPlayer().sendMessage("§cThe room you want to join does not exist.");
 			} else if(event.getPurpose().equalsIgnoreCase("leave")) {
 				Room room = RoomManager.getRoom(event.getData());
 				if(room != null)
