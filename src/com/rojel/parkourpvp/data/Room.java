@@ -163,6 +163,9 @@ public class Room {
 			
 			sendMessage(winner.getPlayer().getDisplayName() + " §3won the game.");
 			
+			for(PlayerData player : players)
+				player.getPlayer().getInventory().clear();
+			
 			gameCounter = GAME_TIME;
 			state = RoomState.ENDING;
 			
@@ -184,6 +187,9 @@ public class Room {
 		} else if(state == RoomState.RUNNING && getGameCounter() <= 0) {
 			gameCounter = GAME_TIME;
 			state = RoomState.ENDING;
+			
+			for(PlayerData player : players)
+				player.getPlayer().getInventory().clear();
 			
 			if(getPlayerWithMostPoints() == null)
 				sendMessage("§3Time has run out and no one won.");
