@@ -1,6 +1,7 @@
 package com.rojel.parkourpvp.data;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -155,8 +156,11 @@ public class Room {
 				@Override
 				public void run() {
 					state = RoomState.WAITING;
-					for(PlayerData player : players) {
-						players.remove(player);
+					Iterator<PlayerData> iterator = players.iterator();
+					
+					while(iterator.hasNext()) {
+						PlayerData player = iterator.next();
+						iterator.remove();
 						player.leaveRoom();
 					}
 					
@@ -169,8 +173,11 @@ public class Room {
 			
 			sendMessage("§3Time has run out and no one won. Teleporting everyone back to the lobby.");
 			
-			for(PlayerData player : players) {
-				players.remove(player);
+			Iterator<PlayerData> iterator = players.iterator();
+			
+			while(iterator.hasNext()) {
+				PlayerData player = iterator.next();
+				iterator.remove();
 				player.leaveRoom();
 			}
 		}
