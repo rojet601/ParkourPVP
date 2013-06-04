@@ -178,7 +178,7 @@ public class Room {
 			if(getPlayerWithMostPoints() == null)
 				sendMessage("§3Time has run out and no one won.");
 			else {
-				sendMessage("§3Time has run out but §r" + getPlayerWithMostPoints().getPlayer().getDisplayName() + " §3 was the only one to score a single point.");
+				sendMessage("§3Time has run out but §r" + getPlayerWithMostPoints().getPlayer().getDisplayName() + " §3was the only one to score a single point.");
 				sendMessage(getPlayerWithMostPoints().getPlayer().getDisplayName() + " §3won the game.");
 			}
 			
