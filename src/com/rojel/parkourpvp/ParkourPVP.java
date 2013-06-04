@@ -17,7 +17,6 @@ import com.rojel.pluginsignapi.PluginSignAPI;
 public class ParkourPVP extends JavaPlugin {
 	private static ParkourPVP plugin;
 	private static Location lobby;
-	public static final int VOID_LEVEL = 50;
 	
 	public void onEnable() {
 		plugin = this;

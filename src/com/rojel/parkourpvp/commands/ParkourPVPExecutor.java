@@ -18,6 +18,7 @@ public class ParkourPVPExecutor implements CommandExecutor {
 			sender.sendMessage("§3/ppvp room [room] lobby §rSets the lobby of [room] to your current position");
 			sender.sendMessage("§3/ppvp room [room] spawn §rSets the spawn of [room] to your current position");
 			sender.sendMessage("§3/ppvp room [room] goal §rSets the goal of [room] to your current position");
+			sender.sendMessage("§3/ppvp room [room] void §rSets the void level of [room] to your current height.");
 			sender.sendMessage("§3/ppvp room [room] delete §rDeletes the room with the name [room]");
 			
 			sender.sendMessage("§3/ppvp rooms §rLists all rooms");
@@ -79,6 +80,21 @@ public class ParkourPVPExecutor implements CommandExecutor {
 				}
 				
 				return true;
+			} else if(task.equalsIgnoreCase("void")) {
+				if(sender instanceof Player) {
+					Room room = RoomManager.getRoom(name);
+					
+					if(room != null) {
+						room.setVoidLevel(((Player) sender).getLocation().getY());
+						sender.sendMessage("§3Void level for §r" + name + " §3set.");
+					} else {
+						sender.sendMessage("§3Room §r" + name + " §3does not exist.");
+					}
+				} else {
+					sender.sendMessage("You have to run this command in-game.");
+				}
+				
+				return true;
 			} else if(task.equalsIgnoreCase("delete")) {
 				Room room = RoomManager.getRoom(name);
 				
@@ -98,7 +114,7 @@ public class ParkourPVPExecutor implements CommandExecutor {
 			else
 				sender.sendMessage("============§3ROOMS§r============");
 			for(Room room : RoomManager.getRooms()) {
-				String line = room.getName() + "§3: " + room.getState().name() + ", " + room.getPlayerCount() + "/" + Room.MAX_PLAYERS;
+				String line = room.getName() + "§3: " + room.getState().name() + ", " + room.getPlayerCount() + "/" + Room.MAX_PLAYERS + ", void@" + (int) room.getVoidLevel();
 				if(room.getLobby() == null)
 					line = line + ", §cLOBBY MISSING§r";
 				if(room.getSpawnCount() == 0)

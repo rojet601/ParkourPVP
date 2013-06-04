@@ -13,7 +13,7 @@ public class Room {
 	public static final int MAX_PLAYERS = 4;
 	public static final int MIN_PLAYERS = 2;
 	public static final int GAME_TIME = 300;
-	public static final int LOBBY_TIME = 20;
+	public static final int LOBBY_TIME = 30;
 	public static final int ENDING_TIME_TICKS = 60;
 	
 	private String name;
@@ -25,6 +25,7 @@ public class Room {
 	private int waitingCounter;
 	private int gameCounter;
 	private int spawnIndex;
+	private double voidLevel;
 	
 	public Room(String name) {
 		this.name = name;
@@ -33,6 +34,7 @@ public class Room {
 		this.state = RoomState.WAITING;
 		this.waitingCounter = LOBBY_TIME;
 		this.gameCounter = GAME_TIME;
+		voidLevel = 50;
 		
 		ParkourPVP.getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(ParkourPVP.getPlugin(), new BukkitRunnable() {
 			@Override
@@ -99,6 +101,14 @@ public class Room {
 	
 	public int getGameCounter() {
 		return gameCounter;
+	}
+	
+	public double getVoidLevel() {
+		return voidLevel;
+	}
+	
+	public void setVoidLevel(double voidLevel) {
+		this.voidLevel = voidLevel;
 	}
 	
 	public boolean isInRoom(PlayerData player) {
