@@ -12,6 +12,9 @@ import com.rojel.pluginsignapi.PluginSignAPI;
 public class Room {
 	public static final int MAX_PLAYERS = 4;
 	public static final int MIN_PLAYERS = 2;
+	public static final int GAME_TIME = 300;
+	public static final int LOBBY_TIME = 20;
+	public static final int ENDING_TIME_TICKS = 60;
 	
 	private String name;
 	private Location lobby;
@@ -28,8 +31,8 @@ public class Room {
 		this.players = new ArrayList<PlayerData>();
 		this.spawns = new ArrayList<Location>();
 		this.state = RoomState.WAITING;
-		this.waitingCounter = 20;
-		this.gameCounter = 300;
+		this.waitingCounter = LOBBY_TIME;
+		this.gameCounter = GAME_TIME;
 		
 		ParkourPVP.getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(ParkourPVP.getPlugin(), new BukkitRunnable() {
 			@Override
@@ -130,10 +133,10 @@ public class Room {
 	
 	private void updateState() {
 		if(state == RoomState.WAITING && getPlayerCount() < MIN_PLAYERS) {
-			waitingCounter = 20;
+			waitingCounter = LOBBY_TIME;
 		} else if(state == RoomState.WAITING && waitingCounter <= 0) {
 			state = RoomState.RUNNING;
-			waitingCounter = 20;
+			waitingCounter = LOBBY_TIME;
 			
 			for(PlayerData player : players) {
 				player.getPlayer().teleport(getSpawn());
@@ -150,6 +153,7 @@ public class Room {
 			
 			sendMessage(winner.getPlayer().getDisplayName() + " §3won the game.");
 			
+			gameCounter = GAME_TIME;
 			state = RoomState.ENDING;
 			
 			ParkourPVP.getPlugin().getServer().getScheduler().runTaskLater(ParkourPVP.getPlugin(), new BukkitRunnable() {
@@ -166,20 +170,33 @@ public class Room {
 					
 					updateState();
 				}
-			}, 100);
+			}, ENDING_TIME_TICKS);
 		} else if(state == RoomState.RUNNING && getGameCounter() <= 0) {
-			gameCounter = 300;
-			state = RoomState.WAITING;
+			gameCounter = GAME_TIME;
+			state = RoomState.ENDING;
 			
-			sendMessage("§3Time has run out and no one won. Teleporting everyone back to the lobby.");
-			
-			Iterator<PlayerData> iterator = players.iterator();
-			
-			while(iterator.hasNext()) {
-				PlayerData player = iterator.next();
-				iterator.remove();
-				player.leaveRoom();
+			if(getPlayerWithMostPoints() == null)
+				sendMessage("§3Time has run out and no one won.");
+			else {
+				sendMessage("§3Time has run out but §r" + getPlayerWithMostPoints().getPlayer().getDisplayName() + " §3 was the only one to score a single point.");
+				sendMessage(getPlayerWithMostPoints().getPlayer().getDisplayName() + " §3won the game.");
 			}
+			
+			ParkourPVP.getPlugin().getServer().getScheduler().runTaskLater(ParkourPVP.getPlugin(), new BukkitRunnable() {
+				@Override
+				public void run() {
+					state = RoomState.WAITING;
+					Iterator<PlayerData> iterator = players.iterator();
+					
+					while(iterator.hasNext()) {
+						PlayerData player = iterator.next();
+						iterator.remove();
+						player.leaveRoom();
+					}
+					
+					updateState();
+				}
+			}, ENDING_TIME_TICKS);
 		}
 		
 		PluginSignAPI.updateSigns();
@@ -203,6 +220,20 @@ public class Room {
 		}
 		
 		return null;
+	}
+	
+	public PlayerData getPlayerWithMostPoints() {
+		PlayerData candidate = null;;
+		
+		for(PlayerData player : players) {
+			if(player.getPoints() == 1)
+				if(candidate == null)
+					candidate = player;
+				else
+					return null;
+		}
+		
+		return candidate;
 	}
 	
 	public void sendMessage(String msg) {
