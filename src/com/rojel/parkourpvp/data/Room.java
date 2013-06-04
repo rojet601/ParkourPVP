@@ -155,8 +155,10 @@ public class Room {
 				@Override
 				public void run() {
 					state = RoomState.WAITING;
-					for(PlayerData player : players)
-						leaveRoom(player);
+					for(PlayerData player : players) {
+						players.remove(player);
+						player.leaveRoom();
+					}
 					
 					updateState();
 				}
@@ -168,7 +170,8 @@ public class Room {
 			sendMessage("§3Time has run out and no one won. Teleporting everyone back to the lobby.");
 			
 			for(PlayerData player : players) {
-				leaveRoom(player);
+				players.remove(player);
+				player.leaveRoom();
 			}
 		}
 		
