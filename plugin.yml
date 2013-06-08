@@ -3,6 +3,7 @@ main: com.rojel.parkourpvp.ParkourPVP
 version: 0.1
 authors: [Rojet601, Gorro_Rojo]
 depend: [PluginSignAPI]
+softdepend: [Vault]
 commands:
   ppvp:
     description: Commands for setting up ParkourPVP arenas.

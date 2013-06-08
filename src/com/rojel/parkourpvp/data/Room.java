@@ -3,7 +3,10 @@ package com.rojel.parkourpvp.data;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import net.milkbowl.vault.economy.Economy;
+
 import org.bukkit.Location;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.rojel.parkourpvp.ParkourPVP;
@@ -162,6 +165,7 @@ public class Room {
 				winner = players.get(0);
 			
 			sendMessage(winner.getPlayer().getDisplayName() + " §3won the game.");
+			playerWins(winner);
 			
 			for(PlayerData player : players)
 				player.getPlayer().getInventory().clear();
@@ -194,8 +198,10 @@ public class Room {
 			if(getPlayerWithMostPoints() == null)
 				sendMessage("§3Time has run out and no one won.");
 			else {
-				sendMessage("§3Time has run out but §r" + getPlayerWithMostPoints().getPlayer().getDisplayName() + " §3was the only one to score a single point.");
-				sendMessage(getPlayerWithMostPoints().getPlayer().getDisplayName() + " §3won the game.");
+				PlayerData winner = getPlayerWithMostPoints();
+				sendMessage("§3Time has run out but §r" + winner.getPlayer().getDisplayName() + " §3was the only one to score a single point.");
+				sendMessage(winner.getPlayer().getDisplayName() + " §3won the game.");
+				playerWins(winner);
 			}
 			
 			ParkourPVP.getPlugin().getServer().getScheduler().runTaskLater(ParkourPVP.getPlugin(), new BukkitRunnable() {
@@ -270,5 +276,15 @@ public class Room {
 			return false;
 		
 		return true;
+	}
+	
+	public void playerWins(PlayerData player) {
+		RegisteredServiceProvider<Economy> economyProvider = ParkourPVP.getPlugin().getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+		Economy economy = economyProvider.getProvider();
+		
+		if(economy != null && economy.hasAccount(player.getPlayer().getName())) {
+			economy.depositPlayer(player.getPlayer().getName(), 1);
+			player.getPlayer().sendMessage("§3You won the round and earned 1 point.");
+		}
 	}
 }
