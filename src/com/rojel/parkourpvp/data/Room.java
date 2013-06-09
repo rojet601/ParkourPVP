@@ -49,7 +49,7 @@ public class Room {
 				} else if(state == RoomState.RUNNING) {
 					gameCounter--;
 					if(gameCounter % 60 == 0)
-						sendMessage((gameCounter / 60) + " §3min left.");
+						sendMessage((gameCounter / 60) + " §3min to match end.");
 					
 					updateState();
 				}
