@@ -18,7 +18,7 @@ public class SignListener implements Listener {
 				Room room = RoomManager.getRoom(event.getData());
 				if(room != null) {
 					if(room.getState() == RoomState.WAITING) {
-						event.setLine(0, "§aJoin room");
+						event.setLine(0, "§aJoin game");
 						event.setLine(3, secondsToString(room.getWaitingCounter()) + " until start");
 					}
 					else if(room.getState() == RoomState.ENDING)
@@ -79,15 +79,15 @@ public class SignListener implements Listener {
 					if(room.isJoinable())
 						room.joinRoom(PlayerManager.getData(event.getPlayer()));
 					else
-						event.getPlayer().sendMessage("§cThis room is either full, running or not setup.");
+						event.getPlayer().sendMessage("§cThis game is either full, running or not setup.");
 				} else
-					event.getPlayer().sendMessage("§cThe room you want to join does not exist.");
+					event.getPlayer().sendMessage("§cThe game you want to join does not exist.");
 			} else if(event.getPurpose().equalsIgnoreCase("leave")) {
 				Room room = RoomManager.getRoom(event.getData());
 				if(room != null)
 					room.leaveRoom(PlayerManager.getData(event.getPlayer()));
 				else
-					event.getPlayer().sendMessage("§cThe room you want to leave does not exist.");
+					event.getPlayer().sendMessage("§cThe game you want to leave does not exist.");
 			}
 		}
 	}

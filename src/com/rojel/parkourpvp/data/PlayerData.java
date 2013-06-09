@@ -1,6 +1,7 @@
 package com.rojel.parkourpvp.data;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.rojel.parkourpvp.ParkourPVP;
@@ -80,5 +81,13 @@ public class PlayerData {
 		this.points = 0;
 		this.room = null;
 		player.teleport(ParkourPVP.getLobby());
+	}
+	
+	public void clearItems() {
+		Inventory inventory = player.getInventory();
+		
+		for(int i = 0; i < inventory.getSize(); i++)
+			if(inventory.getItem(i) != null && inventory.getItem(i).getTypeId() > 255)
+				inventory.setItem(i, null);
 	}
 }

@@ -123,7 +123,7 @@ public class Room {
 	}
 	
 	public void joinRoom(PlayerData player) {
-		sendMessage(player.getPlayer().getDisplayName() + " §3joined the room.");
+		sendMessage(player.getPlayer().getDisplayName() + " §3joined the game.");
 		
 		players.add(player);
 		player.joinRoom(this);
@@ -135,7 +135,7 @@ public class Room {
 		players.remove(player);
 		player.leaveRoom();
 		
-		sendMessage(player.getPlayer().getDisplayName() + " §3left the room.");
+		sendMessage(player.getPlayer().getDisplayName() + " §3left the game.");
 		
 		updateState();
 	}
@@ -164,61 +164,19 @@ public class Room {
 			else
 				winner = players.get(0);
 			
-			sendMessage(winner.getPlayer().getDisplayName() + " §3won the game.");
 			playerWins(winner);
 			
-			for(PlayerData player : players)
-				player.getPlayer().getInventory().clear();
-			
-			gameCounter = GAME_TIME;
-			state = RoomState.ENDING;
-			
-			ParkourPVP.getPlugin().getServer().getScheduler().runTaskLater(ParkourPVP.getPlugin(), new BukkitRunnable() {
-				@Override
-				public void run() {
-					state = RoomState.WAITING;
-					Iterator<PlayerData> iterator = players.iterator();
-					
-					while(iterator.hasNext()) {
-						PlayerData player = iterator.next();
-						iterator.remove();
-						player.leaveRoom();
-					}
-					
-					updateState();
-				}
-			}, ENDING_TIME_TICKS);
-		} else if(state == RoomState.RUNNING && getGameCounter() <= 0) {
-			gameCounter = GAME_TIME;
-			state = RoomState.ENDING;
-			
-			for(PlayerData player : players)
-				player.getPlayer().getInventory().clear();
-			
+			endGame();
+		} else if(state == RoomState.RUNNING && getGameCounter() <= 0) {			
 			if(getPlayerWithMostPoints() == null)
 				sendMessage("§3Time has run out and no one won.");
 			else {
 				PlayerData winner = getPlayerWithMostPoints();
 				sendMessage("§3Time has run out but §r" + winner.getPlayer().getDisplayName() + " §3was the only one to score a single point.");
-				sendMessage(winner.getPlayer().getDisplayName() + " §3won the game.");
 				playerWins(winner);
 			}
 			
-			ParkourPVP.getPlugin().getServer().getScheduler().runTaskLater(ParkourPVP.getPlugin(), new BukkitRunnable() {
-				@Override
-				public void run() {
-					state = RoomState.WAITING;
-					Iterator<PlayerData> iterator = players.iterator();
-					
-					while(iterator.hasNext()) {
-						PlayerData player = iterator.next();
-						iterator.remove();
-						player.leaveRoom();
-					}
-					
-					updateState();
-				}
-			}, ENDING_TIME_TICKS);
+			endGame();
 		}
 		
 		PluginSignAPI.updateSigns();
@@ -226,7 +184,8 @@ public class Room {
 	
 	public void playerScores(PlayerData player) {
 		player.addPoint();
-		sendMessage(player.getPlayer().getDisplayName() + " §3scored a point.");
+		if(player.getPoints() == 1)
+			sendMessage(player.getPlayer().getDisplayName() + " §3has scored, don't let them score again!");
 		
 		for(PlayerData data : players) {
 			data.getPlayer().teleport(getSpawn());
@@ -235,7 +194,7 @@ public class Room {
 		updateState();
 	}
 	
-	public PlayerData getWinner() {
+	private PlayerData getWinner() {
 		for(PlayerData player : players) {
 			if(player.getPoints() >= 2)
 				return player;
@@ -244,7 +203,7 @@ public class Room {
 		return null;
 	}
 	
-	public PlayerData getPlayerWithMostPoints() {
+	private PlayerData getPlayerWithMostPoints() {
 		PlayerData candidate = null;;
 		
 		for(PlayerData player : players) {
@@ -278,13 +237,41 @@ public class Room {
 		return true;
 	}
 	
-	public void playerWins(PlayerData player) {
-		RegisteredServiceProvider<Economy> economyProvider = ParkourPVP.getPlugin().getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-		Economy economy = economyProvider.getProvider();
+	private void playerWins(PlayerData player) {
+		sendMessage(player.getPlayer().getDisplayName() + " §3won the game.");
 		
-		if(economy != null && economy.hasAccount(player.getPlayer().getName())) {
-			economy.depositPlayer(player.getPlayer().getName(), 1);
-			player.getPlayer().sendMessage("§3You won the round and earned 1 point.");
+		if(ParkourPVP.getPlugin().getServer().getPluginManager().getPlugin("Vault") != null) {
+			RegisteredServiceProvider<Economy> economyProvider = ParkourPVP.getPlugin().getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+			Economy economy = economyProvider.getProvider();
+			
+			if(economy != null && economy.hasAccount(player.getPlayer().getName())) {
+				economy.depositPlayer(player.getPlayer().getName(), 3);
+				player.getPlayer().sendMessage("§3You won the round and earned 3 coins.");
+			}
 		}
+	}
+	
+	private void endGame() {
+		gameCounter = GAME_TIME;
+		state = RoomState.ENDING;
+		
+		for(PlayerData player : players)
+			player.clearItems();
+		
+		ParkourPVP.getPlugin().getServer().getScheduler().runTaskLater(ParkourPVP.getPlugin(), new BukkitRunnable() {
+			@Override
+			public void run() {
+				state = RoomState.WAITING;
+				Iterator<PlayerData> iterator = players.iterator();
+				
+				while(iterator.hasNext()) {
+					PlayerData player = iterator.next();
+					iterator.remove();
+					player.leaveRoom();
+				}
+				
+				updateState();
+			}
+		}, ENDING_TIME_TICKS);
 	}
 }
