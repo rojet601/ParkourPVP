@@ -2,10 +2,17 @@ package com.rojel.parkourpvp.data;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 import net.milkbowl.vault.economy.Economy;
 
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
+import org.bukkit.FireworkEffect.Type;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -18,6 +25,8 @@ public class Room {
 	public static final int GAME_TIME = 300;
 	public static final int LOBBY_TIME = 30;
 	public static final int ENDING_TIME_TICKS = 60;
+	public static final int FIREWORK_COUNT = 10;
+	public static final int FIREWORK_RADIUS = 10;
 	
 	private String name;
 	private Location lobby;
@@ -29,6 +38,7 @@ public class Room {
 	private int gameCounter;
 	private int spawnIndex;
 	private double voidLevel;
+	private int fireworksLaunched;
 	
 	public Room(String name) {
 		this.name = name;
@@ -131,7 +141,7 @@ public class Room {
 		updateState();
 	}
 	
-	public void leaveRoom(PlayerData player) {		
+	public void leaveRoom(PlayerData player) {
 		players.remove(player);
 		player.leaveRoom();
 		
@@ -166,8 +176,22 @@ public class Room {
 			
 			playerWins(winner);
 			
+			for(PlayerData player : players) {
+				if(player.getPoints() == 1) {
+					if(ParkourPVP.getPlugin().getServer().getPluginManager().getPlugin("Vault") != null) {
+						RegisteredServiceProvider<Economy> economyProvider = ParkourPVP.getPlugin().getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+						Economy economy = economyProvider.getProvider();
+						
+						if(economy != null && economy.hasAccount(player.getPlayer().getName())) {
+							economy.depositPlayer(player.getPlayer().getName(), 3);
+							player.getPlayer().sendMessage("§3You scored once and earn 2 coins.");
+						}
+					}
+				}
+			}
+			
 			endGame();
-		} else if(state == RoomState.RUNNING && getGameCounter() <= 0) {			
+		} else if(state == RoomState.RUNNING && getGameCounter() <= 0) {
 			if(getPlayerWithMostPoints() == null)
 				sendMessage("§3Time has run out and no one won.");
 			else {
@@ -204,7 +228,7 @@ public class Room {
 	}
 	
 	private PlayerData getPlayerWithMostPoints() {
-		PlayerData candidate = null;;
+		PlayerData candidate = null;
 		
 		for(PlayerData player : players) {
 			if(player.getPoints() == 1)
@@ -237,7 +261,7 @@ public class Room {
 		return true;
 	}
 	
-	private void playerWins(PlayerData player) {
+	private void playerWins(final PlayerData player) {
 		sendMessage(player.getPlayer().getDisplayName() + " §3won the game.");
 		
 		if(ParkourPVP.getPlugin().getServer().getPluginManager().getPlugin("Vault") != null) {
@@ -249,6 +273,45 @@ public class Room {
 				player.getPlayer().sendMessage("§3You won the round and earned 3 coins.");
 			}
 		}
+		
+		ParkourPVP.getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(ParkourPVP.getPlugin(), new BukkitRunnable() {
+			public void run() {
+				Random r = new Random();
+				Location playerLoc = player.getPlayer().getLocation();
+				Location loc = new Location(playerLoc.getWorld(), playerLoc.getX() + r.nextInt(FIREWORK_RADIUS * 2) - FIREWORK_RADIUS, playerLoc.getY() + r.nextInt(4), playerLoc.getZ() + r.nextInt(FIREWORK_RADIUS * 2) - FIREWORK_RADIUS);
+				
+				Firework firework = (Firework) player.getPlayer().getWorld().spawnEntity(loc, EntityType.FIREWORK);
+				FireworkMeta meta = firework.getFireworkMeta();
+				
+				Type type = Type.BALL;
+				int rt = r.nextInt(5);
+				if(rt == 1)
+					type = Type.BALL_LARGE;
+				if(rt == 2)
+					type = Type.BURST;
+				if(rt == 3)
+					type = Type.CREEPER;
+				if(rt == 4)
+					type = Type.STAR;
+				
+				Color color1 = Color.fromRGB(r.nextInt(256), r.nextInt(256), r.nextInt(256));
+				Color color2 = Color.fromRGB(r.nextInt(256), r.nextInt(256), r.nextInt(256));
+				
+				FireworkEffect effect = FireworkEffect.builder().flicker(r.nextBoolean()).withColor(color1).withFade(color2).with(type).trail(r.nextBoolean()).build();
+				
+				meta.addEffect(effect);
+				meta.setPower(0);
+				
+				firework.setFireworkMeta(meta);
+				
+				fireworksLaunched++;
+				
+				if(fireworksLaunched == FIREWORK_COUNT)
+					fireworksLaunched = 0;
+				else
+					ParkourPVP.getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(ParkourPVP.getPlugin(), this, (int) (Math.random() * 10));
+			}
+		}, (int) (Math.random() * 10));
 	}
 	
 	private void endGame() {
