@@ -183,7 +183,7 @@ public class Room {
 						Economy economy = economyProvider.getProvider();
 						
 						if(economy != null && economy.hasAccount(player.getPlayer().getName())) {
-							economy.depositPlayer(player.getPlayer().getName(), 3);
+							economy.depositPlayer(player.getPlayer().getName(), 2);
 							player.getPlayer().sendMessage("§3You scored once and earn 2 coins.");
 						}
 					}
@@ -192,9 +192,10 @@ public class Room {
 			
 			endGame();
 		} else if(state == RoomState.RUNNING && getGameCounter() <= 0) {
-			if(getPlayerWithMostPoints() == null)
+			if(getPlayerWithMostPoints() == null) {
 				sendMessage("§3Time has run out and no one won.");
-			else {
+				ParkourPVP.getPlugin().getServer().broadcastMessage("Match on §r" + getName() + " §3has ended with no winner.");
+			} else {
 				PlayerData winner = getPlayerWithMostPoints();
 				sendMessage("§3Time has run out but §r" + winner.getPlayer().getDisplayName() + " §3was the only one to score a single point.");
 				playerWins(winner);
@@ -263,6 +264,7 @@ public class Room {
 	
 	private void playerWins(final PlayerData player) {
 		sendMessage(player.getPlayer().getDisplayName() + " §3won the game.");
+		ParkourPVP.getPlugin().getServer().broadcastMessage(player.getPlayer().getDisplayName() + " §3won a match on §r" + getName());
 		
 		if(ParkourPVP.getPlugin().getServer().getPluginManager().getPlugin("Vault") != null) {
 			RegisteredServiceProvider<Economy> economyProvider = ParkourPVP.getPlugin().getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
