@@ -8,8 +8,9 @@ import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
-import org.bukkit.Location;
 import org.bukkit.FireworkEffect.Type;
+import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -54,6 +55,18 @@ public class Room {
 			public void run() {
 				if(state == RoomState.WAITING && getPlayerCount() >= MIN_PLAYERS) {
 					waitingCounter--;
+					
+					if(waitingCounter < 4 && waitingCounter > 0) {
+						sendMessage("§c" + waitingCounter);
+						
+						for(PlayerData player : players) {
+							player.getPlayer().playSound(player.getPlayer().getLocation(), Sound.NOTE_PIANO, 1, 1);
+						}
+					} else if(waitingCounter == 0) {
+						for(PlayerData player : players) {
+							player.getPlayer().playSound(player.getPlayer().getLocation(), Sound.NOTE_PIANO, 1, 2);
+						}
+					}
 					
 					updateState();
 				} else if(state == RoomState.RUNNING) {
